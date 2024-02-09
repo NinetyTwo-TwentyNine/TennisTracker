@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 bluetoothItem?.apply {
                     Log.d("APP_DEBUGGER", "Color set called.")
                     this.setBackgroundColor(
-                        getColor(when(thread != null) {
+                        getColor(when(thread != null && thread.checkConnection()) {
                             true -> R.color.green
                             false -> R.color.red
                         }))

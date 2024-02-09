@@ -9,6 +9,8 @@ class ConnectedThread(bluetoothSocket: BluetoothSocket) : Thread() {
     private val inputStream: InputStream?
     private val outputStream: OutputStream?
 
+    override fun run() {}
+
     init {
         var inputStream: InputStream? = null
         var outputStream: OutputStream? = null
@@ -22,7 +24,9 @@ class ConnectedThread(bluetoothSocket: BluetoothSocket) : Thread() {
         this.outputStream = outputStream
     }
 
-    override fun run() {}
+    fun checkConnection(): Boolean {
+        return (inputStream != null && outputStream != null)
+    }
 
     fun write(byte: Byte) {
         if (outputStream != null) {
