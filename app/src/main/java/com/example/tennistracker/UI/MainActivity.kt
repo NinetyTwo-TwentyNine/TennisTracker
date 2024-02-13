@@ -51,21 +51,33 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.bluetooth_menu, menu)
 
         tennisViewModel.performTimerEvent({
-            tennisViewModel.dataCanBeSent.observe(this) {thread ->
-                val bluetoothItem: View? = findViewById(R.id.bluetooth)
-                Log.d("APP_DEBUGGER", "Attempt to set the color.")
-                bluetoothItem?.apply {
-                    Log.d("APP_DEBUGGER", "Color set called.")
-                    this.setBackgroundColor(
-                        getColor(when(thread != null && thread.checkConnection()) {
-                            true -> R.color.green
-                            false -> R.color.red
-                        }))
-                }
+            (findViewById<View>(R.id.bluetooth)).apply {
+                this.setBackgroundColor(getColor(R.color.red))
+            }
+
+            tennisViewModel.connectedThread.observe(this) {
+                editBluetoothIcon()
+            }
+            tennisViewModel.connectionThread.observe(this) { thread ->
+                editBluetoothIcon()
             }
         }, 100L)
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun editBluetoothIcon() {
+        (findViewById<View>(R.id.bluetooth)).apply {
+            Log.d("APP_DEBUGGER", "Attempt to set the color.")
+            (findViewById<View>(R.id.bluetooth)).apply {
+                Log.d("APP_DEBUGGER", "Color set called.")
+                this.setBackgroundColor(
+                    getColor(when(tennisViewModel.connectionThread.value != null && tennisViewModel.connectedThread.value != null && tennisViewModel.connectedThread.value!!.checkConnection()) {
+                        true -> R.color.green
+                        false -> R.color.red
+                    }))
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -4,81 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3B2621"
+    android:background="#F6F6F6"
     tools:context=".UI.TrackingFragment">
 
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardLayout"
-        android:layout_width="350dp"
-        android:layout_height="300dp"
-        android:backgroundTint="#BBA49D"
-        app:cardCornerRadius="20dp"
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Backhand Slice"
+        android:textAlignment="center"
+        android:textColor="#B2B2B2"
+        android:textSize="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.05">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/main_image"
-                android:layout_width="350dp"
-                android:layout_height="225dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/icon_tennis_guy" />
-
-            <TextView
-                android:id="@+id/main_text"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:text="Tennis tracking"
-                android:textColor="#3B2621"
-                android:textSize="16sp"
-                android:textAlignment="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/main_image" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="350dp"
+        android:layout_height="225dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text1"
+        app:srcCompat="@drawable/icon_tennis_guy" />
 
     <LinearLayout
         android:id="@+id/chart_panel"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/cardLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image"
         app:layout_constraintVertical_bias="0.25">
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/piechartStrength"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            />
+            android:layout_weight="1" />
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/piechartSpeed"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            />
+            android:layout_weight="1" />
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/piechartRadian"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
@@ -86,61 +63,60 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/chart_panel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chart_panel">
 
         <TextView
             android:id="@+id/textStrength"
-            android:text="Strength"
-            android:textColor="@color/white"
-            android:textAlignment="center"
             android:layout_width="0dp"
+            android:textSize="24sp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            />
+            android:text="Strength"
+            android:textAlignment="center"
+            android:textColor="#B2B2B2" />
 
         <TextView
             android:id="@+id/textSpeed"
-            android:text="Speed"
-            android:textColor="@color/white"
-            android:textAlignment="center"
+            android:textSize="24sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            />
+            android:text="Speed"
+            android:textAlignment="center"
+            android:textColor="#B2B2B2" />
 
         <TextView
             android:id="@+id/textRadian"
-            android:text="Radian"
-            android:textColor="@color/white"
-            android:textAlignment="center"
+            android:textSize="24sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            />
+            android:text="Radian"
+            android:textAlignment="center"
+            android:textColor="#B2B2B2" />
     </LinearLayout>
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barchartSpeed"
         android:layout_width="match_parent"
         android:layout_height="125dp"
-        app:layout_constraintTop_toBottomOf="@id/chartText_panel"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chartText_panel" />
 
     <TextView
         android:id="@+id/textSpeedBars"
-        android:text="Speed results"
-        android:textColor="@color/white"
-        android:textAlignment="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/barchartSpeed"
+        android:text="Speed results"
+        android:textAlignment="center"
+        android:textColor="#B2B2B2"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@id/barchartSpeed" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

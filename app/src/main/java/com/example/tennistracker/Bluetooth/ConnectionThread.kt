@@ -3,6 +3,8 @@ package com.example.tennistracker.Bluetooth
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 class ConnectionThread(private val device: BluetoothDevice, private val failFun: ()->Unit, private val successFun: (BluetoothSocket)->Unit) : Thread() {
@@ -29,11 +31,15 @@ class ConnectionThread(private val device: BluetoothDevice, private val failFun:
             success = true
         } catch (e: IOException) {
             e.printStackTrace()
-            failFun()
+            MainScope().launch {
+                failFun()
+            }
             cancel()
         }
         if (success) {
-            successFun(bluetoothSocket!!)
+            MainScope().launch {
+                successFun(bluetoothSocket!!)
+            }
         }
     }
 

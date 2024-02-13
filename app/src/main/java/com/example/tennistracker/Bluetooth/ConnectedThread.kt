@@ -1,6 +1,7 @@
 package com.example.tennistracker.Bluetooth
 
 import android.bluetooth.BluetoothSocket
+import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -28,30 +29,40 @@ class ConnectedThread(bluetoothSocket: BluetoothSocket) : Thread() {
         return (inputStream != null && outputStream != null)
     }
 
-    fun write(byte: Byte) {
+    fun write(byte: Byte): Boolean {
         if (outputStream != null) {
             val byteArray: ArrayList<Byte> = arrayListOf()
             byteArray.add(byte)
 
-            try {
+            return try {
                 outputStream.write(byteArray.toByteArray())
                 outputStream.flush()
+                true
             } catch (e: IOException) {
                 e.printStackTrace()
-                throw(RuntimeException("Failed attempt to write to the device."))
+                Log.d("APP_DEBUGGER", "Failed attempt to write to the device.")
+                cancel()
+                false
             }
+        } else {
+            return false
         }
     }
 
-    fun writePackage(dataPackage: ByteArray) {
+    fun writePackage(dataPackage: ByteArray): Boolean {
         if (outputStream != null) {
-            try {
+            return try {
                 outputStream.write(dataPackage)
                 outputStream.flush()
+                true
             } catch (e: IOException) {
                 e.printStackTrace()
-                throw(RuntimeException("Failed attempt to write to the device."))
+                Log.d("APP_DEBUGGER", "Failed attempt to write to the device.")
+                cancel()
+                false
             }
+        } else {
+            return false
         }
     }
 

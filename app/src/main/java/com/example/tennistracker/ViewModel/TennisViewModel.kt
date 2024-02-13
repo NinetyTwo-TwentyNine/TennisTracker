@@ -33,10 +33,8 @@ class TennisViewModel : ViewModel() {
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothDevice: BluetoothDevice? = null
 
-    private var connectionThread: ConnectionThread? = null
-    private var connectedThread: ConnectedThread? = null
-
-    val dataCanBeSent: MutableLiveData<ConnectedThread> = MutableLiveData(connectedThread)
+    var connectionThread: MutableLiveData<ConnectionThread> = MutableLiveData()
+    var connectedThread: MutableLiveData<ConnectedThread> = MutableLiveData()
 
     private val hitData: ArrayList<TennisHit> = arrayListOf()
 
@@ -134,7 +132,7 @@ class TennisViewModel : ViewModel() {
                 currentConnectedThread.start()
                 connectedThreads.add(currentConnectedThread)
 
-                connectedThread = currentConnectedThread
+                connectedThread.value = currentConnectedThread
                 Log.d("APP_CHECKER", "Connection to device ${bluetoothDevice!!.name} (${bluetoothDevice!!.bluetoothClass}) established.")
             },
             failFun = {
@@ -144,12 +142,12 @@ class TennisViewModel : ViewModel() {
                 Log.d("APP_CHECKER", "Connection to device ${bluetoothDevice!!.name} (${bluetoothDevice!!.bluetoothClass}) failed.")
             })
         currentConnectionThread.start()
-        connectionThread = currentConnectionThread
+        connectionThread.value = currentConnectionThread
     }
 
     fun uploadData(dataPackage: ArrayList<Byte>): Boolean {
-        return if (connectedThread != null && connectionThread != null && connectionThread!!.isConnected) {
-            connectedThread!!.writePackage(dataPackage.toByteArray())
+        return if (connectedThread.value != null && connectionThread.value != null && connectionThread.value!!.isConnected) {
+            connectedThread.value!!.writePackage(dataPackage.toByteArray())
             true
         } else {
             false
