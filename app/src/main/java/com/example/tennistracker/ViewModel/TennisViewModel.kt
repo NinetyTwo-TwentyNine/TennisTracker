@@ -210,16 +210,4 @@ class TennisViewModel : ViewModel() {
         }
         eventTimer.schedule(timerTask, time)
     }
-
-    fun performTimerEventScheduled(timerFun: () -> Unit, time: Long) {
-        val eventTimer = Timer()
-        val timerTask: TimerTask = object : TimerTask() {
-            override fun run() {
-                MainScope().launch {
-                    timerFun()
-                }
-            }
-        }
-        eventTimer.scheduleAtFixedRate(timerTask, 1000L, time)
-    }
 }

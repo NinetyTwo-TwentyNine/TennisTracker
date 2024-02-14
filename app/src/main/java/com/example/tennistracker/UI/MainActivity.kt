@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
             (findViewById<View>(R.id.bluetooth)).apply {
                 Log.d("APP_DEBUGGER", "Color set called.")
                 this.setBackgroundColor(
-                    getColor(when(tennisViewModel.connectionThread.value != null && tennisViewModel.connectedThread.value != null && tennisViewModel.connectedThread.value!!.checkConnection()) {
+                    getColor(when(tennisViewModel.connectionThread.value != null && tennisViewModel.connectionThread.value!!.isConnected && tennisViewModel.connectedThread.value != null && tennisViewModel.connectedThread.value!!.checkConnection()) {
                         true -> R.color.green
                         false -> R.color.red
                     }))
