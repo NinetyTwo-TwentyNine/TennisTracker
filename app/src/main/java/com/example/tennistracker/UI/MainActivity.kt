@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             tennisViewModel.connectedThread.observe(this) {
                 editBluetoothIcon()
             }
-            tennisViewModel.connectionThread.observe(this) { thread ->
+            tennisViewModel.connectionThread.observe(this) {
                 editBluetoothIcon()
             }
         }, 100L)

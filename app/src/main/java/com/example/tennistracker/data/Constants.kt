@@ -11,11 +11,16 @@ object Constants {
     const val APP_TOAST_BLUETOOTH_DEVICE_NOT_FOUND = "No valid device was found."
     const val APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL = "Successful connection!"
     const val APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED = "Failed to connect to the device."
+    const val APP_TEXT_LAST_HIT_SPEED = "Last hit speed:"
+
     const val APP_DEVICE_BLUETOOTH_ADDRESS = "00:20:10:08:0B:EF"
 
     const val APP_TENNIS_MAX_STRENGTH = 120
     const val APP_TENNIS_MAX_SPEED = 200
     const val APP_TENNIS_MAX_RADIAN = 270
+
+    const val APP_DATA_BYTE_AMOUNT = 3+1
+    const val APP_DATA_RECEPTION_PERIOD = 100L
 
     val APP_BLUETOOTH_PERMISSIONS_LIST = listOf(
         Manifest.permission.BLUETOOTH_SCAN,

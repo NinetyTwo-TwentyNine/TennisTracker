@@ -7,13 +7,13 @@ import com.example.tennistracker.data.Constants.APP_TENNIS_MAX_STRENGTH
 data class TennisHit(private val strength: Float, private val speed: Float, private val radian: Float) {
     init {
         if (strength > APP_TENNIS_MAX_STRENGTH || strength < 0) {
-            throw(RuntimeException("Illegal Strength value in a data class."))
+            throw(RuntimeException("Illegal Strength value ($strength) in a data class."))
         }
         if (speed > APP_TENNIS_MAX_SPEED || speed < 0) {
-            throw(RuntimeException("Illegal Speed value in a data class."))
+            throw(RuntimeException("Illegal Speed value ($speed) in a data class."))
         }
         if (radian > APP_TENNIS_MAX_RADIAN || radian < 0) {
-            throw(RuntimeException("Illegal Radian value in a data class."))
+            throw(RuntimeException("Illegal Radian value ($radian) in a data class."))
         }
     }
 

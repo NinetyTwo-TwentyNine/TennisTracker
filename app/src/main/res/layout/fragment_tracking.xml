@@ -28,6 +28,18 @@
         app:layout_constraintTop_toBottomOf="@+id/text1"
         app:srcCompat="@drawable/icon_tennis_guy" />
 
+    <TextView
+        android:id="@+id/lastSpeedText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Last hit speed: "
+        android:textAlignment="center"
+        android:textColor="#B2B2B2"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image" />
+
     <LinearLayout
         android:id="@+id/chart_panel"
         android:layout_width="match_parent"
@@ -36,7 +48,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image"
+        app:layout_constraintTop_toBottomOf="@id/lastSpeedText"
         app:layout_constraintVertical_bias="0.25">
 
         <com.github.mikephil.charting.charts.PieChart

@@ -31,14 +31,13 @@ class ConnectionThread(private val device: BluetoothDevice, private val failFun:
             success = true
         } catch (e: IOException) {
             e.printStackTrace()
-            MainScope().launch {
-                failFun()
-            }
             cancel()
         }
-        if (success) {
-            MainScope().launch {
+        MainScope().launch {
+            if (success) {
                 successFun(bluetoothSocket!!)
+            } else {
+                failFun()
             }
         }
     }

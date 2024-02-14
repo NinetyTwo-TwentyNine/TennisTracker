@@ -13,6 +13,7 @@ import com.example.tennistracker.ViewModel.TennisViewModel
 import com.example.tennistracker.data.Constants.APP_TENNIS_MAX_RADIAN
 import com.example.tennistracker.data.Constants.APP_TENNIS_MAX_SPEED
 import com.example.tennistracker.data.Constants.APP_TENNIS_MAX_STRENGTH
+import com.example.tennistracker.data.Constants.APP_TEXT_LAST_HIT_SPEED
 import com.example.tennistracker.data.TennisHit
 import com.example.tennistracker.databinding.FragmentTrackingBinding
 import com.github.mikephil.charting.charts.PieChart
@@ -35,8 +36,21 @@ class TrackingFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupData()
+        if (tennisViewModel.getHitData().isEmpty()) {
+            tennisViewModel.addHit(TennisHit(speed = 75F, strength = 37F, radian = 129F))
+            tennisViewModel.addHit(TennisHit(speed = 80F, strength = 30F, radian = 135F) )
+            tennisViewModel.addHit(TennisHit(speed = 160F, strength = 44F, radian = 131F) )
+            tennisViewModel.addHit(TennisHit(speed = 170F, strength = 35F, radian = 130F) )
+        }
 
+        tennisViewModel.hitData.observe(this) {
+            tennisViewModel.performTimerEvent({
+                setupCharts()
+            }, 100L)
+        }
+    }
+
+    private fun setupCharts() {
         val strengthEntries: ArrayList<PieEntry> = arrayListOf()
         strengthEntries.add(PieEntry(tennisViewModel.getCurrentStrength(), "Current"))
         strengthEntries.add(PieEntry((APP_TENNIS_MAX_STRENGTH - tennisViewModel.getCurrentStrength()), ""))
@@ -65,14 +79,9 @@ class TrackingFragment : Fragment() {
         binding.barchartSpeed.getAxis(barDataSet.axisDependency).setStartAtZero(true)
         binding.barchartSpeed.setVisibleYRange(0F, APP_TENNIS_MAX_SPEED.toFloat(), barDataSet.axisDependency)
         binding.barchartSpeed.xAxis.granularity = 1F
-        binding.barchartSpeed.notifyDataSetChanged()
-    }
+        binding.barchartSpeed.invalidate()
 
-    private fun setupData() {
-        tennisViewModel.addHit(TennisHit(speed = 20F, strength = 37F, radian = 129F))
-        tennisViewModel.addHit(TennisHit(speed = 30F, strength = 30F, radian = 135F) )
-        tennisViewModel.addHit(TennisHit(speed = 25F, strength = 44F, radian = 131F) )
-        tennisViewModel.addHit(TennisHit(speed = 40F, strength = 35F, radian = 130F) )
+        binding.lastSpeedText.text = "$APP_TEXT_LAST_HIT_SPEED ${String.format("%.2f", tennisViewModel.getHitData().last().getSpeed())} km/h."
     }
 
     private fun setupChart(chart: PieChart, data: PieData) {

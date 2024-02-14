@@ -15,12 +15,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.tennistracker.Bluetooth.ConnectedThread
 import com.example.tennistracker.Bluetooth.ConnectionThread
+import com.example.tennistracker.data.Constants.APP_DATA_BYTE_AMOUNT
+import com.example.tennistracker.data.Constants.APP_DATA_RECEPTION_PERIOD
 import com.example.tennistracker.data.Constants.APP_DEVICE_BLUETOOTH_ADDRESS
+import com.example.tennistracker.data.Constants.APP_TENNIS_MAX_RADIAN
+import com.example.tennistracker.data.Constants.APP_TENNIS_MAX_SPEED
+import com.example.tennistracker.data.Constants.APP_TENNIS_MAX_STRENGTH
 import com.example.tennistracker.data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED
 import com.example.tennistracker.data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL
 import com.example.tennistracker.data.TennisHit
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.util.*
 import kotlin.collections.ArrayList
@@ -33,45 +39,48 @@ class TennisViewModel : ViewModel() {
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothDevice: BluetoothDevice? = null
 
-    var connectionThread: MutableLiveData<ConnectionThread> = MutableLiveData()
-    var connectedThread: MutableLiveData<ConnectedThread> = MutableLiveData()
+    private var receivedHitData: TennisHit? = null
 
-    private val hitData: ArrayList<TennisHit> = arrayListOf()
+    var connectionThread: MutableLiveData<ConnectionThread?> = MutableLiveData(null)
+    var connectedThread: MutableLiveData<ConnectedThread?> = MutableLiveData(null)
+
+    val hitData: MutableLiveData<ArrayList<TennisHit>> = MutableLiveData(arrayListOf())
 
     fun getCurrentSpeed(): Float {
         var sum = 0F
-        hitData.forEach {
-            sum += (it.getSpeed() / hitData.size)
+        hitData.value!!.forEach {
+            sum += (it.getSpeed() / hitData.value!!.size)
         }
         return sum
     }
 
     fun getCurrentStrength(): Float {
         var sum = 0F
-        hitData.forEach {
-            sum += (it.getStrength() / hitData.size)
+        hitData.value!!.forEach {
+            sum += (it.getStrength() / hitData.value!!.size)
         }
         return sum
     }
 
     fun getCurrentRadian(): Float {
         var sum = 0F
-        hitData.forEach {
-            sum += (it.getRadian() / hitData.size)
+        hitData.value!!.forEach {
+            sum += (it.getRadian() / hitData.value!!.size)
         }
         return sum
     }
 
     fun getHitData(): List<TennisHit> {
-        return hitData
+        return hitData.value!!
     }
 
     fun addHit(hit: TennisHit) {
-        hitData.add(hit)
+        hitData.value!!.add(hit)
+        hitData.postValue(hitData.value!!)
     }
 
     fun cleanHitData() {
-        hitData.clear()
+        hitData.value!!.clear()
     }
 
     fun setBluetoothAvailable(available: Boolean) {
@@ -128,7 +137,9 @@ class TennisViewModel : ViewModel() {
                     Toast.makeText(context, APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_SUCCESSFUL, Toast.LENGTH_SHORT).show()
                 }
 
-                val currentConnectedThread = ConnectedThread(socket)
+                val currentConnectedThread = ConnectedThread(socket) { stream ->
+                    threadTimerFun(stream)
+                }
                 currentConnectedThread.start()
                 connectedThreads.add(currentConnectedThread)
 
@@ -139,10 +150,35 @@ class TennisViewModel : ViewModel() {
                 (context as Activity).runOnUiThread {
                     Toast.makeText(context, APP_TOAST_BLUETOOTH_DEVICE_CONNECTION_FAILED, Toast.LENGTH_SHORT).show()
                 }
+                connectedThread.value = null
                 Log.d("APP_CHECKER", "Connection to device ${bluetoothDevice!!.name} (${bluetoothDevice!!.bluetoothClass}) failed.")
             })
         currentConnectionThread.start()
         connectionThread.value = currentConnectionThread
+    }
+
+    private fun threadTimerFun(stream: InputStream): Boolean {
+        if (stream.available() > 0) {
+            performTimerEvent({
+                val bytesArray: ByteArray = stream.readNBytes(APP_DATA_BYTE_AMOUNT)
+                Log.d("DATA_OBSERVER", "Receiving data: ${bytesArray[1]}, ${bytesArray[2]}, ${bytesArray[3]}")
+
+                receivedHitData = TennisHit(
+                    speed = bytesArray[1].toFloat() / 255 * APP_TENNIS_MAX_SPEED,
+                    strength = bytesArray[2].toFloat() / 255 * APP_TENNIS_MAX_STRENGTH,
+                    radian = bytesArray[3].toFloat() / 255 * APP_TENNIS_MAX_RADIAN
+                )
+
+                Log.d(
+                    "DATA_OBSERVER",
+                    "speed = ${receivedHitData!!.getSpeed()}, strength = ${receivedHitData!!.getStrength()}, radian = ${receivedHitData!!.getRadian()}."
+                )
+                addHit(receivedHitData!!)
+            }, APP_DATA_RECEPTION_PERIOD)
+            return true
+        } else {
+            return false
+        }
     }
 
     fun uploadData(dataPackage: ArrayList<Byte>): Boolean {
@@ -173,5 +209,17 @@ class TennisViewModel : ViewModel() {
             }
         }
         eventTimer.schedule(timerTask, time)
+    }
+
+    fun performTimerEventScheduled(timerFun: () -> Unit, time: Long) {
+        val eventTimer = Timer()
+        val timerTask: TimerTask = object : TimerTask() {
+            override fun run() {
+                MainScope().launch {
+                    timerFun()
+                }
+            }
+        }
+        eventTimer.scheduleAtFixedRate(timerTask, 1000L, time)
     }
 }
