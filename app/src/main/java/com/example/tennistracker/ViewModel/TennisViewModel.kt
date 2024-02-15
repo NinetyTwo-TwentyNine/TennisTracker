@@ -26,6 +26,7 @@ import com.example.tennistracker.data.Constants.APP_TOAST_BLUETOOTH_DEVICE_CONNE
 import com.example.tennistracker.data.TennisHit
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
 import java.util.*
@@ -160,20 +161,25 @@ class TennisViewModel : ViewModel() {
     private fun threadTimerFun(stream: InputStream): Boolean {
         if (stream.available() > 0) {
             performTimerEvent({
-                val bytesArray: ByteArray = stream.readNBytes(APP_DATA_BYTE_AMOUNT)
-                Log.d("DATA_OBSERVER", "Receiving data: ${bytesArray[1]}, ${bytesArray[2]}, ${bytesArray[3]}")
+                try {
+                    val bytesArray: ByteArray = stream.readNBytes(APP_DATA_BYTE_AMOUNT)
+                    Log.d("DATA_OBSERVER", "Receiving data: ${bytesArray[1]}, ${bytesArray[2]}, ${bytesArray[3]}")
 
-                receivedHitData = TennisHit(
-                    speed = bytesArray[1].toFloat() / 255 * APP_TENNIS_MAX_SPEED,
-                    strength = bytesArray[2].toFloat() / 255 * APP_TENNIS_MAX_STRENGTH,
-                    radian = bytesArray[3].toFloat() / 255 * APP_TENNIS_MAX_RADIAN
-                )
+                    receivedHitData = TennisHit(
+                        speed = bytesArray[1].toFloat() / 255 * APP_TENNIS_MAX_SPEED,
+                        strength = bytesArray[2].toFloat() / 255 * APP_TENNIS_MAX_STRENGTH,
+                        radian = bytesArray[3].toFloat() / 255 * APP_TENNIS_MAX_RADIAN
+                    )
 
-                Log.d(
-                    "DATA_OBSERVER",
-                    "speed = ${receivedHitData!!.getSpeed()}, strength = ${receivedHitData!!.getStrength()}, radian = ${receivedHitData!!.getRadian()}."
-                )
-                addHit(receivedHitData!!)
+                    Log.d(
+                        "DATA_OBSERVER",
+                        "speed = ${receivedHitData!!.getSpeed()}, strength = ${receivedHitData!!.getStrength()}, radian = ${receivedHitData!!.getRadian()}."
+                    )
+                    addHit(receivedHitData!!)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    connectedThread.value = null
+                }
             }, APP_DATA_RECEPTION_PERIOD)
             return true
         } else {

@@ -37,10 +37,11 @@ class TrackingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (tennisViewModel.getHitData().isEmpty()) {
-            tennisViewModel.addHit(TennisHit(speed = 75F, strength = 37F, radian = 129F))
-            tennisViewModel.addHit(TennisHit(speed = 80F, strength = 30F, radian = 135F) )
-            tennisViewModel.addHit(TennisHit(speed = 160F, strength = 44F, radian = 131F) )
-            tennisViewModel.addHit(TennisHit(speed = 170F, strength = 35F, radian = 130F) )
+            tennisViewModel.addHit(TennisHit(speed = 60F, strength = 30F, radian = 135F) )
+            tennisViewModel.addHit(TennisHit(speed = 50F, strength = 37F, radian = 129F) )
+            tennisViewModel.addHit(TennisHit(speed = 140F, strength = 90F, radian = 179F) )
+            tennisViewModel.addHit(TennisHit(speed = 160F, strength = 110F, radian = 165F) )
+            tennisViewModel.addHit(TennisHit(speed = 155F, strength = 105F, radian = 181F) )
         }
 
         tennisViewModel.hitData.observe(this) {
@@ -72,6 +73,7 @@ class TrackingFragment : Fragment() {
         }
         val barDataSet = BarDataSet(barDataList, "")
         barDataSet.colors = ColorTemplate.COLORFUL_COLORS.toMutableList()
+        barDataSet.colors.shuffle()
         barDataSet.valueTextColor = R.color.white
         barDataSet.valueTextSize = 16F
         binding.barchartSpeed.description.isEnabled = false
