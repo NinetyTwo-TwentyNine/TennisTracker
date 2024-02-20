@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.IntentFilter
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -203,6 +204,14 @@ class TennisViewModel : ViewModel() {
             throw(RuntimeException("This number is too big to send."))
         }
         return bytes[3]
+    }
+
+    fun getIntentFilter(): IntentFilter {
+        val filter = IntentFilter()
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+        filter.addAction(BluetoothDevice.ACTION_FOUND)
+        return filter
     }
 
     fun performTimerEvent(timerFun: () -> Unit, time: Long) {

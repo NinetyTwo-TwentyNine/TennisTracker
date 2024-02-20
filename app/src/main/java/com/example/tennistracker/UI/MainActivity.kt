@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -18,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.example.tennistracker.R
 import com.example.tennistracker.ViewModel.TennisViewModel
 import com.example.tennistracker.data.Constants
@@ -43,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 return
             }
         }
-        initiateBluetoothSetup()
+        performBluetoothConnectionAttempt()
     }
 
 
@@ -61,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             tennisViewModel.connectionThread.observe(this) {
                 editBluetoothIcon()
             }
-        }, 100L)
+        }, 50L)
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -83,12 +81,12 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.bluetooth -> {
-                if (tennisViewModel.isBluetoothAvailable() != null) {
-                    if (tennisViewModel.isBluetoothAvailable()!!) {
-                        tennisViewModel.enableSearch()
-                    } else {
-                        Toast.makeText(this, APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE, Toast.LENGTH_SHORT).show()
-                    }
+                performBluetoothConnectionAttempt()
+            }
+            R.id.cleaner -> {
+                tennisViewModel.cleanHitData()
+                Constants.APP_STATISTICS_DEFAULT_LIST.forEach {
+                    tennisViewModel.addHit(it)
                 }
             }
         }
@@ -107,31 +105,19 @@ class MainActivity : AppCompatActivity() {
                         return
                     }
                 }
-                initiateBluetoothSetup()
+                performBluetoothConnectionAttempt()
             }
             else -> return
         }
     }
 
-    private fun initiateBluetoothSetup() {
-        if (tennisViewModel.isBluetoothAvailable() == null) {
-            tennisViewModel.createBluetoothAdapter(this)
-        }
+    private fun performBluetoothConnectionAttempt() {
+        tennisViewModel.createBluetoothAdapter(this)
 
         if (tennisViewModel.isBluetoothAvailable()!!) {
-            val filter = IntentFilter()
-            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
-            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-            filter.addAction(BluetoothDevice.ACTION_FOUND)
-            ContextCompat.registerReceiver(
-                this,
-                receiver,
-                filter,
-                ContextCompat.RECEIVER_EXPORTED
-            )
             tennisViewModel.enableSearch()
         } else {
-            Toast.makeText(this, "${Constants.APP_TOAST_BLUETOOTH_MISSING}\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "${Constants.APP_TOAST_BLUETOOTH_NOT_AVAILABLE}\n$APP_TOAST_BLUETOOTH_DATA_SENDING_NOT_AVAILABLE", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -159,6 +145,16 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(receiver, tennisViewModel.getIntentFilter())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(receiver)
     }
 
     companion object {
